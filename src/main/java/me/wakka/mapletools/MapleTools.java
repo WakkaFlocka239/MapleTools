@@ -3,8 +3,8 @@ package me.wakka.mapletools;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import lombok.Getter;
-import me.wakka.mapletools.data.MapleSession;
 import me.wakka.mapletools.data.MapleData;
+import me.wakka.mapletools.data.MapleSession;
 import me.wakka.mapletools.feature.mapviewer.MapViewer;
 import me.wakka.mapletools.feature.overlay.OverlayWindow;
 import me.wakka.mapletools.feature.ui.MapleToolsWindow;
@@ -19,7 +19,6 @@ public class MapleTools extends Application {
 
 	private OverlayWindow overlayWindow;
 	private MapViewer mapViewer;
-	private MapleToolsWindow toolsWindow;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -30,9 +29,10 @@ public class MapleTools extends Application {
 		if (stopping) return;
 		stopping = true;
 
-		MapleSession.get().logger().info("MapleTools shutting down...");
-		overlayWindow.stop();
-		mapViewer.stop();
+		if (overlayWindow != null) overlayWindow.stop();
+		if (mapViewer != null) mapViewer.stop();
+
+		MapleSession.get().getLogger().info("MapleTools shut down");
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class MapleTools extends Application {
 
 		stage.hide();
 
-		toolsWindow = new MapleToolsWindow(session);
+		MapleToolsWindow toolsWindow = new MapleToolsWindow(session);
 		toolsWindow.start(stage);
 	}
 

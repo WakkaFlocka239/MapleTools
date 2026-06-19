@@ -27,7 +27,7 @@ public abstract class MapleToolPanel extends BorderPane {
 
 	public abstract String getPanelId();
 
-	public boolean isResizeable() {
+	public boolean isPanelResizable() {
 		return false;
 	}
 
@@ -82,5 +82,12 @@ public abstract class MapleToolPanel extends BorderPane {
 		MenuItem item = new MenuItem(title);
 		item.setOnAction(action);
 		return item;
+	}
+
+	protected Label valueLabel(String initialText) {
+		Label label = new Label(initialText);
+		label.setMaxWidth(Double.MAX_VALUE);
+		content.getChildren().add(label);
+		return label;
 	}
 }

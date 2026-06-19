@@ -1,9 +1,6 @@
 package me.wakka.mapletools;
 
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import lombok.SneakyThrows;
-import me.wakka.mapletools.feature.ui.panels.LogPanel;
 
 import java.awt.*;
 import java.io.IOException;
@@ -13,12 +10,14 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapleLogger {
 
 	public static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-	private LogPanel logPanel;
+	private final List<LogListener> listeners = new ArrayList<>();
 	private final Path logFile;
 
 	public MapleLogger() {
@@ -31,8 +30,17 @@ public class MapleLogger {
 		}
 	}
 
-	public void attach(LogPanel panel) {
-		this.logPanel = panel;
+	public void addListener(LogListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeListener(LogListener listener) {
+		listeners.remove(listener);
+	}
+
+	private void notifyListeners(String line) {
+		for (LogListener listener : listeners)
+			listener.onLog(line);
 	}
 
 	public void log(String message) {
@@ -55,17 +63,6 @@ public class MapleLogger {
 		write(LogLevel.NOTE, message);
 	}
 
-	public void clear(){
-		logPanel.clear();
-	}
-
-	public void copy(){
-		ClipboardContent content = new ClipboardContent();
-		content.putString(logPanel.getLogArea().getText());
-
-		Clipboard.getSystemClipboard().setContent(content);
-	}
-
 	@SneakyThrows
 	public void openFolder(){
 		Desktop.getDesktop().open(Path.of("logs").toFile());
@@ -78,9 +75,7 @@ public class MapleLogger {
 		String line = "[" + timestamp + "] " + levelText + message;
 
 		writeToFile(line);
-
-		if (logPanel != null)
-			logPanel.append(line);
+		notifyListeners(line);
 	}
 
 	private void writeToFile(String line) {

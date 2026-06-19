@@ -10,14 +10,12 @@ public class HealthPanel extends MapleToolPanel {
 		return "health";
 	}
 
-	private final Label label = new Label("HP: -- / --");
+	private final Label label = valueLabel("HP: -- / --");
 
 	public HealthPanel(MapleSession session) {
 		super("Health", session);
 
 		setPrefSize(250, 100);
-
-		content.getChildren().add(label);
 
 		session.getCurrentHp().addListener((obs, old, current) -> update());
 		session.getCurrentMaxHp().addListener((obs, old, current) -> update());

@@ -10,14 +10,12 @@ public class ExperiencePanel extends MapleToolPanel {
 		return "experience";
 	}
 
-	private final Label label = new Label("XP: --");
+	private final Label label = valueLabel("EXP: --");
 
 	public ExperiencePanel(MapleSession session) {
 		super("Experience", session);
 
 		setPrefSize(250, 100);
-
-		content.getChildren().add(label);
 
 		session.getCurrentExpPercent().addListener((obs, old, current) -> update());
 

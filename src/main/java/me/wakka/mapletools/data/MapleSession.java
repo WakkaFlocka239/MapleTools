@@ -10,9 +10,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import me.wakka.mapletools.MapleLogger;
-import me.wakka.mapletools.feature.ui.panels.LogPanel;
 import me.wakka.mapletools.models.MapleMap;
-import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class MapleSession {
@@ -26,10 +24,6 @@ public class MapleSession {
 	}
 
 	private final MapleLogger logger = new MapleLogger();
-
-	public MapleLogger logger() {
-		return logger;
-	}
 
 	// Current
 	private final ObjectProperty<MapleMap> currentMap = new SimpleObjectProperty<>();
@@ -71,7 +65,8 @@ public class MapleSession {
 	}
 
 	public void setCurrentMap(@NonNull MapleMap map) {
-		if (this.currentMap.get().getMapId() == map.getMapId())
+		MapleMap currentMap = this.currentMap.get();
+		if (currentMap != null && currentMap.getMapId() == map.getMapId())
 			return;
 
 		this.previousMap = this.currentMap.get();

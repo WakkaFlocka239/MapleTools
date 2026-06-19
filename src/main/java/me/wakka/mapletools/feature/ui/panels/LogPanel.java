@@ -4,12 +4,15 @@ import javafx.application.Platform;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import lombok.Getter;
+import me.wakka.mapletools.LogListener;
 import me.wakka.mapletools.data.MapleSession;
 
 import java.util.List;
 
-public class LogPanel extends MapleToolPanel {
+public class LogPanel extends MapleToolPanel implements LogListener {
 
 	@Getter
 	private final TextArea logArea = new TextArea();
@@ -21,21 +24,23 @@ public class LogPanel extends MapleToolPanel {
 	}
 
 	@Override
-	public boolean isResizeable() {
+	public boolean isPanelResizable() {
 		return true;
 	}
 
 	@Override
 	public List<MenuItem> getSettings() {
 		return List.of(
-			menuItem("Clear Log", e -> session.logger().clear()),
-			menuItem("Copy Log", e -> session.logger().copy()),
-			menuItem("Open Folder", e -> session.logger().openFolder())
+			menuItem("Clear Log", e -> clear()),
+			menuItem("Copy Log", e -> copy()),
+			menuItem("Open Folder", e -> session.getLogger().openFolder())
 		);
 	}
 
 	public LogPanel(MapleSession session) {
 		super("Log", session);
+
+		session.getLogger().addListener(this);
 
 		setPrefSize(500, 250);
 		setMinSize(250, 120);
@@ -58,7 +63,7 @@ public class LogPanel extends MapleToolPanel {
 		if (text.isEmpty())
 			return;
 
-		session.logger().note(text);
+		session.getLogger().note(text);
 
 		inputField.clear();
 	}
@@ -70,7 +75,19 @@ public class LogPanel extends MapleToolPanel {
 		});
 	}
 
+	@Override
+	public void onLog(String line) {
+		Platform.runLater(() -> append(line));
+	}
+
 	public void clear() {
 		logArea.clear();
+	}
+
+	public void copy() {
+		ClipboardContent content = new ClipboardContent();
+		content.putString(logArea.getText());
+
+		Clipboard.getSystemClipboard().setContent(content);
 	}
 }

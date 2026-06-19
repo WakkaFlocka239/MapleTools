@@ -11,6 +11,9 @@ public interface TextReader {
 	void read(MapleSession session, CaptureRegion region, BufferedImage image);
 
 	static BufferedImage scale(BufferedImage original, int factor) {
+		if (factor <= 1)
+			return original;
+
 		int width = original.getWidth() * factor;
 		int height = original.getHeight() * factor;
 

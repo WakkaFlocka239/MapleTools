@@ -11,16 +11,14 @@ public class LocationPanel extends MapleToolPanel {
 		return "location";
 	}
 
-	private final Label streetLabel = new Label("Street: ???");
-	private final Label mapLabel = new Label("Map: ???");
-	private final Label mapIdLabel = new Label("ID: ???");
+	private final Label streetLabel = valueLabel("Street: ???");
+	private final Label mapLabel = valueLabel("Map: ???");
+	private final Label mapIdLabel = valueLabel("ID: ???");
 
 	public LocationPanel(MapleSession session) {
 		super("Location", session);
 
 		setPrefSize(300, 100);
-
-		content.getChildren().addAll(streetLabel, mapLabel, mapIdLabel);
 
 		session.getCurrentMap().addListener((obs, old, current) -> update());
 

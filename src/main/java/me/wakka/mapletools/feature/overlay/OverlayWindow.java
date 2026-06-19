@@ -15,6 +15,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import me.wakka.mapletools.data.MapleSession;
 import me.wakka.mapletools.feature.overlay.CaptureRegion.CaptureType;
+import me.wakka.mapletools.feature.overlay.CaptureRegionPresets.CaptureRegionPreset;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +101,12 @@ public class OverlayWindow {
 		startKeepOnTop();
 
 		List<CaptureRegion> regions = new ArrayList<>();
-		addRegion(root, regions, CaptureType.LOCATION_TEXT, Color.GREEN, 5000, 44, 27, 156, 36);
-//		addRegion(root, regions, CaptureType.HEALTH_TEXT, Color.RED, 6000, 238, 733, 80, 18);
-//		addRegion(root, regions, CaptureType.MANA_TEXT, Color.BLUE, 7000, 350, 733, 80, 18);
-//		addRegion(root, regions, CaptureType.EXP_TEXT, Color.YELLOW, 8000, 503, 733, 40, 18);
+		for (CaptureRegionPreset preset : CaptureRegionPresets.DEFAULTS) {
+			if (!preset.enabled())
+				continue;
+
+			addRegion(root, regions, preset.type(), preset.color(), preset.refreshMillis(), preset.x(), preset.y(), preset.width(), preset.height());
+		}
 
 		captureManager = new CaptureManager(session, regions);
 		captureManager.start();

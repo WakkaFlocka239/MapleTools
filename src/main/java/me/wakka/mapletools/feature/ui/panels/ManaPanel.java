@@ -10,14 +10,12 @@ public class ManaPanel extends MapleToolPanel {
 		return "mana";
 	}
 
-	private final Label label = new Label("MP: -- / --");
+	private final Label label = valueLabel("MP: -- / --");
 
 	public ManaPanel(MapleSession session) {
 		super("Mana", session);
 
 		setPrefSize(250, 100);
-
-		content.getChildren().add(label);
 
 		session.getCurrentMp().addListener((obs, old, current) -> update());
 		session.getCurrentMaxMp().addListener((obs, old, current) -> update());

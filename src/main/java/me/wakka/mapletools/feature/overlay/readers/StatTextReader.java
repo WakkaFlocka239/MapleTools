@@ -11,26 +11,24 @@ import java.awt.image.BufferedImage;
 
 public class StatTextReader implements TextReader {
 
-	public static final String UNKNOWN_VALUE = "???";
-
 	private final ITesseract tesseract;
 	private final int scaleFactor;
 
 	public StatTextReader(String whitelist, int pageSegMode, int scaleFactor) {
 		this.scaleFactor = scaleFactor;
 		this.tesseract = new Tesseract();
-
-		tesseract.setDatapath("tessdata");
-		tesseract.setLanguage("eng");
-		tesseract.setPageSegMode(pageSegMode);
-		tesseract.setVariable("tessedit_char_whitelist", whitelist);
+		this.tesseract.setDatapath("tessdata");
+		this.tesseract.setLanguage("eng");
+		this.tesseract.setPageSegMode(pageSegMode);
+		this.tesseract.setVariable("tessedit_char_whitelist", whitelist);
 	}
 
 	@SneakyThrows
 	@Override
 	public void read(MapleSession session, CaptureRegion region, BufferedImage image) {
 		try {
-			String raw = tesseract.doOCR(image).trim();
+			BufferedImage processed = TextReader.scale(image, scaleFactor);
+			String raw = this.tesseract.doOCR(processed).trim();
 
 			switch (region.getType()) {
 				case HEALTH_TEXT -> session.setRawHp(raw);
