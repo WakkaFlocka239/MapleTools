@@ -14,6 +14,8 @@ import me.wakka.mapletools.feature.ui.panels.LocationPanel;
 import me.wakka.mapletools.feature.ui.panels.LogPanel;
 import me.wakka.mapletools.feature.ui.panels.ManaPanel;
 
+import java.util.Objects;
+
 public class MapleToolsWindow extends BorderPane {
 
 	private final MapleSession session;
@@ -24,12 +26,7 @@ public class MapleToolsWindow extends BorderPane {
 
 	public void start(Stage stage) {
 		Scene scene = new Scene(this, 1000, 750);
-
-		scene.getStylesheets().add(
-			getClass()
-				.getResource("/css/mapletools.css")
-				.toExternalForm()
-		);
+		scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/mapletools.css")).toExternalForm());
 
 		stage.setTitle("MapleTools");
 		stage.setScene(scene);
@@ -41,13 +38,11 @@ public class MapleToolsWindow extends BorderPane {
 		dashboard.setVgap(10);
 		dashboard.setPadding(new Insets(10));
 
-
 		Pane dragLayer = new Pane();
 		dragLayer.setMouseTransparent(true);
 		dragLayer.setPickOnBounds(false);
 		dragLayer.prefWidthProperty().bind(dashboard.widthProperty());
 		dragLayer.prefHeightProperty().bind(dashboard.heightProperty());
-
 
 		HealthPanel healthPanel = new HealthPanel(session);
 		ManaPanel manaPanel = new ManaPanel(session);

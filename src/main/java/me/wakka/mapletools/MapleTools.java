@@ -1,6 +1,7 @@
 package me.wakka.mapletools;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
 import me.wakka.mapletools.data.MapleData;
@@ -10,6 +11,7 @@ import me.wakka.mapletools.feature.overlay.OverlayWindow;
 import me.wakka.mapletools.feature.ui.MapleToolsWindow;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MapleTools extends Application {
 
@@ -37,6 +39,11 @@ public class MapleTools extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		stage.getIcons().addAll(
+			new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/icon-32.png"))),
+			new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/icon-256.png")))
+		);
+
 		MapleData.init();
 		MapleSession session = MapleSession.get();
 

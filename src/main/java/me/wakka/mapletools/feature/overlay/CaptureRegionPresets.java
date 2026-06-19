@@ -6,6 +6,7 @@ import me.wakka.mapletools.feature.overlay.CaptureRegion.CaptureType;
 import java.util.List;
 
 public class CaptureRegionPresets {
+
 	public static final List<CaptureRegionPreset> DEFAULTS = List.of(
 		new CaptureRegionPreset(CaptureType.LOCATION_TEXT, true, Color.GREEN, 5000, 44, 27, 156, 36),
 		new CaptureRegionPreset(CaptureType.HEALTH_TEXT, false, Color.RED, 6000, 238, 733, 80, 18),
