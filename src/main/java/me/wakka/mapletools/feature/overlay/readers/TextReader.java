@@ -1,11 +1,14 @@
 package me.wakka.mapletools.feature.overlay.readers;
 
+import me.wakka.mapletools.data.MapleSession;
 import me.wakka.mapletools.feature.overlay.CaptureRegion;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public interface TextReader {
+
+	void read(MapleSession session, CaptureRegion region, BufferedImage image);
 
 	static BufferedImage scale(BufferedImage original, int factor) {
 		int width = original.getWidth() * factor;

@@ -1,5 +1,11 @@
 package me.wakka.mapletools.data;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -9,7 +15,6 @@ import me.wakka.mapletools.models.MapleMap;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
-@Setter
 public class MapleSession {
 
 	private MapleSession() {}
@@ -27,12 +32,12 @@ public class MapleSession {
 	}
 
 	// Current
-	private MapleMap currentMap;
-	private int currentHp;
-	private int currentMp;
-	private double currentExpPercent;
-	private int currentMaxHp;
-	private int currentMaxMp;
+	private final ObjectProperty<MapleMap> currentMap = new SimpleObjectProperty<>();
+	private final IntegerProperty currentHp = new SimpleIntegerProperty();
+	private final IntegerProperty currentMp = new SimpleIntegerProperty();
+	private final DoubleProperty currentExpPercent = new SimpleDoubleProperty();
+	private final IntegerProperty currentMaxHp = new SimpleIntegerProperty();
+	private final IntegerProperty currentMaxMp = new SimpleIntegerProperty();
 
 	// Previous
 	private MapleMap previousMap;
@@ -43,20 +48,33 @@ public class MapleSession {
 	private int previousMaxMp;
 
 	// Raw OCR
+	@Setter
 	private String rawLocation;
+	@Setter
 	private String rawStreetName;
+	@Setter
 	private String rawMapName;
+	@Setter
 	private String rawHp;
+	@Setter
 	private String rawMp;
+	@Setter
 	private String rawExp;
 
 	//
 
+	public void setHealth(int curHp, int maxHp) {
+		this.previousHp = this.currentHp.get();
+		this.previousMaxHp = this.currentMaxHp.get();
+		this.currentHp.set(curHp);
+		this.currentMaxHp.set(maxHp);
+	}
+
 	public void setCurrentMap(@NonNull MapleMap map) {
-		if (this.currentMap != null && this.currentMap.getMapId() == map.getMapId())
+		if (this.currentMap.get().getMapId() == map.getMapId())
 			return;
 
-		this.previousMap = this.currentMap;
-		this.currentMap = map;
+		this.previousMap = this.currentMap.get();
+		this.currentMap.set(map);
 	}
 }

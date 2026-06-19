@@ -1,9 +1,11 @@
 package me.wakka.mapletools.feature.overlay;
 
 import javafx.application.Platform;
+import lombok.SneakyThrows;
 import me.wakka.mapletools.data.MapleSession;
 import me.wakka.mapletools.feature.overlay.readers.LocationTextReader;
 import me.wakka.mapletools.feature.overlay.readers.StatTextReader;
+import me.wakka.mapletools.feature.overlay.readers.TextReader;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,9 +18,9 @@ public class CaptureManager {
 	private final Robot robot;
 	private volatile boolean running = false;
 	private Thread thread;
-	private final StatTextReader healthManaReader = new StatTextReader("0123456789/", 7, 1);
-	private final StatTextReader expReader = new StatTextReader("0123456789.%", 7, 1);
-	private final LocationTextReader locationReader = new LocationTextReader(6, 6);
+	private final StatTextReader readerHpMp = new StatTextReader("0123456789/", 7, 1);
+	private final StatTextReader readerExp = new StatTextReader("0123456789.%", 7, 1);
+	private final LocationTextReader readerLoc = new LocationTextReader(6, 6);
 
 
 	public CaptureManager(MapleSession session, List<CaptureRegion> regions) throws AWTException {
@@ -67,22 +69,30 @@ public class CaptureManager {
 
 	private void processRegion(CaptureRegion region) {
 		try {
-			setRegionsVisible(false);
-			Thread.sleep(25);
-
-			BufferedImage image = robot.createScreenCapture(region.getScreenBounds());
-
-			setRegionsVisible(true);
-
-			switch (region.getType()) {
-				case LOCATION_TEXT -> locationReader.read(session, region, image);
-				case HEALTH_TEXT -> healthManaReader.read(session, region, image);
-				case MANA_TEXT -> healthManaReader.read(session, region, image);
-				case EXP_TEXT -> expReader.read(session, region, image);
-			}
-
+			BufferedImage image = captureImage(region);
+			getReader(region).read(session, region, image);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private TextReader getReader(CaptureRegion region) {
+		return switch (region.getType()) {
+			case LOCATION_TEXT -> readerLoc;
+			case HEALTH_TEXT, MANA_TEXT -> readerHpMp;
+			case EXP_TEXT -> readerExp;
+		};
+	}
+
+	@SneakyThrows
+	private BufferedImage captureImage(CaptureRegion region) {
+		setRegionsVisible(false);
+
+		try {
+			Thread.sleep(25);
+			return robot.createScreenCapture(region.getScreenBounds());
+		} finally {
+			setRegionsVisible(true);
 		}
 	}
 

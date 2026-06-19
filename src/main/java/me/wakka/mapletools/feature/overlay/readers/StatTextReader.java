@@ -27,14 +27,15 @@ public class StatTextReader implements TextReader {
 	}
 
 	@SneakyThrows
+	@Override
 	public void read(MapleSession session, CaptureRegion region, BufferedImage image) {
 		try {
 			String raw = tesseract.doOCR(image).trim();
 
 			switch (region.getType()) {
-				case HEALTH_TEXT -> MapleSession.get().setRawHp(raw);
-				case MANA_TEXT -> MapleSession.get().setRawMp(raw);
-				case EXP_TEXT -> MapleSession.get().setRawExp(raw);
+				case HEALTH_TEXT -> session.setRawHp(raw);
+				case MANA_TEXT -> session.setRawMp(raw);
+				case EXP_TEXT -> session.setRawExp(raw);
 			}
 
 

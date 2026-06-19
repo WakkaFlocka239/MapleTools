@@ -20,13 +20,18 @@ public class LocationPanel extends MapleToolPanel {
 
 		setPrefSize(300, 100);
 
-		streetLabel.setStyle("-fx-text-fill: white;");
-		mapLabel.setStyle("-fx-text-fill: white;");
-		mapIdLabel.setStyle("-fx-text-fill: white;");
-		getChildren().addAll(streetLabel, mapLabel, mapIdLabel);
+		content.getChildren().addAll(streetLabel, mapLabel, mapIdLabel);
+
+		session.getCurrentMap().addListener((obs, old, current) -> update());
+
+		update();
 	}
 
-	public void update(MapleMap currentMap) {
+	public void update() {
+		MapleMap currentMap = session.getCurrentMap().get();
+		if (currentMap == null)
+			return;
+
 		streetLabel.setText("Street: " + currentMap.getStreetName());
 		mapLabel.setText("Map: " + currentMap.getMapName());
 		mapIdLabel.setText("ID: " + currentMap.getMapId());

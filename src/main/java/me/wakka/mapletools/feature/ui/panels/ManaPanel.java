@@ -17,11 +17,15 @@ public class ManaPanel extends MapleToolPanel {
 
 		setPrefSize(250, 100);
 
-		label.setStyle("-fx-text-fill: white;");
-		getChildren().add(label);
+		content.getChildren().add(label);
+
+		session.getCurrentMp().addListener((obs, old, current) -> update());
+		session.getCurrentMaxMp().addListener((obs, old, current) -> update());
+
+		update();
 	}
 
-	public void update(int current, int max) {
-		label.setText("MP: " + current + " / " + max);
+	public void update() {
+		label.setText("MP: " + session.getCurrentMp().get() + " / " + session.getCurrentMaxMp().get());
 	}
 }

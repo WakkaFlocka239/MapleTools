@@ -10,7 +10,13 @@ public class MapViewer {
 		this.session = session;
 	}
 
+	public void stop() {
+
+	}
+
 	public void start() {
 		// TODO
 	}
+
+
 }

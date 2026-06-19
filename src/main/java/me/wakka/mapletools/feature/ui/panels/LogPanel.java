@@ -1,25 +1,38 @@
 package me.wakka.mapletools.feature.ui.panels;
 
 import javafx.application.Platform;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TextField;
+import lombok.Getter;
 import me.wakka.mapletools.data.MapleSession;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class LogPanel extends MapleToolPanel {
 
-	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
+	@Getter
+	private final TextArea logArea = new TextArea();
+	private final TextField inputField = new TextField();
 
 	@Override
 	public String getPanelId() {
 		return "log";
 	}
 
-	private final TextArea logArea = new TextArea();
+	@Override
+	public boolean isResizeable() {
+		return true;
+	}
 
+	@Override
+	public List<MenuItem> getSettings() {
+		return List.of(
+			menuItem("Clear Log", e -> session.logger().clear()),
+			menuItem("Copy Log", e -> session.logger().copy()),
+			menuItem("Open Folder", e -> session.logger().openFolder())
+		);
+	}
 
 	public LogPanel(MapleSession session) {
 		super("Log", session);
@@ -27,62 +40,37 @@ public class LogPanel extends MapleToolPanel {
 		setPrefSize(500, 250);
 		setMinSize(250, 120);
 
+		logArea.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		logArea.setEditable(false);
 		logArea.setWrapText(true);
+		logArea.getStyleClass().add("log-area");
 
-		logArea.setStyle("""
-    -fx-control-inner-background: #1e1e1e;
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-highlight-fill: #444;
-    -fx-highlight-text-fill: white;
-""");
+		inputField.setPromptText("Add note...");
+		inputField.setOnAction(e -> submitInput());
+		inputField.getStyleClass().add("log-input");
 
-		getChildren().add(logArea);
-
-		VBox.setVgrow(logArea, Priority.ALWAYS);
-		logArea.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		content.getChildren().addAll(logArea, inputField);
 	}
 
-	public void log(String message) {
+	private void submitInput() {
+		String text = inputField.getText().trim();
+
+		if (text.isEmpty())
+			return;
+
+		session.logger().note(text);
+
+		inputField.clear();
+	}
+
+	public void append(String line) {
 		Platform.runLater(() -> {
-			String timestamp = LocalTime.now().format(TIME_FORMAT);
-
-			logArea.appendText(
-				"[" + timestamp + "] " + message + "\n"
-			);
-
+			logArea.appendText(line + "\n");
 			logArea.setScrollTop(Double.MAX_VALUE);
 		});
 	}
 
-	private void log(String level, String message) {
-		if (level != null && !level.isEmpty()) {
-			level = "[" + level + "] ";
-		}
-
-		String finalLevel = level;
-		Platform.runLater(() -> {
-			String timestamp = LocalTime.now().format(TIME_FORMAT);
-
-			logArea.appendText(
-				"[" + timestamp + "] " + finalLevel + message + "\n"
-			);
-
-			logArea.setScrollTop(Double.MAX_VALUE);
-		});
-	}
-
-	public void info(String message) {
-		log("INFO", message);
-	}
-
-	public void warn(String message) {
-		log("WARN", message);
-	}
-
-	public void error(String message) {
-		log("ERROR", message);
+	public void clear() {
+		logArea.clear();
 	}
 }

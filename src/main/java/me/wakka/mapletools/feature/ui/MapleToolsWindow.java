@@ -6,15 +6,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -28,10 +25,10 @@ import me.wakka.mapletools.feature.ui.panels.ManaPanel;
 public class MapleToolsWindow extends BorderPane {
 
 	private final MapleSession session;
+	private FlowPane dashboard;
 	private ImageView activeGhost;
 	private Pane activePanel;
 	private Pane activeDragLayer;
-	private FlowPane dashboard;
 	private double grabX;
 	private double grabY;
 
@@ -62,9 +59,14 @@ public class MapleToolsWindow extends BorderPane {
 
 			activeGhost = null;
 			activePanel = null;
-			dashboard = null;
 			activeDragLayer = null;
 		});
+
+		scene.getStylesheets().add(
+			getClass()
+				.getResource("/css/mapletools.css")
+				.toExternalForm()
+		);
 
 		stage.setTitle("MapleTools");
 		stage.setScene(scene);
@@ -73,7 +75,7 @@ public class MapleToolsWindow extends BorderPane {
 		stage.show();
 
 		StackPane root = new StackPane();
-		FlowPane dashboard = new FlowPane();
+		dashboard = new FlowPane();
 		Pane dragLayer = new Pane();
 
 		dragLayer.setMouseTransparent(true);
@@ -92,28 +94,27 @@ public class MapleToolsWindow extends BorderPane {
 		LogPanel logPanel = new LogPanel(session);
 		session.logger().attach(logPanel);
 
-		makeDraggable(healthPanel, dashboard, dragLayer);
-		makeDraggable(manaPanel, dashboard, dragLayer);
-		makeDraggable(expPanel, dashboard, dragLayer);
-		makeDraggable(locationPanel, dashboard, dragLayer);
-		makeDraggable(logPanel, dashboard, dragLayer);
+		makeDraggable(healthPanel, dragLayer);
+		makeDraggable(manaPanel, dragLayer);
+		makeDraggable(expPanel, dragLayer);
+		makeDraggable(locationPanel, dragLayer);
+		makeDraggable(logPanel, dragLayer);
 
 		dashboard.getChildren().addAll(healthPanel, manaPanel, expPanel, locationPanel, logPanel);
 
 		root.getChildren().addAll(dashboard, dragLayer);
 		setCenter(root);
 
-		logPanel.info("MapleTools started.");
+		session.logger().info("MapleTools started");
 	}
 
-	private void makeDraggable(Pane panel, FlowPane daskboard, Pane dragLayer) {
+	private void makeDraggable(Pane panel, Pane dragLayer) {
 		panel.setOnMousePressed(e -> {
 			Point2D mouseInPanel = panel.sceneToLocal(e.getSceneX(), e.getSceneY());
 			grabX = mouseInPanel.getX();
 			grabY = mouseInPanel.getY();
 
 			activePanel = panel;
-			dashboard = daskboard;
 			activeDragLayer = dragLayer;
 
 			WritableImage image = panel.snapshot(null, null);
@@ -139,11 +140,6 @@ public class MapleToolsWindow extends BorderPane {
 			Bounds bounds = node.localToScene(node.getBoundsInLocal());
 
 			if (bounds.contains(sceneX, sceneY)) {
-				node.setStyle("""
-					-fx-background-color: #3a3a3a;
-					-fx-background-radius: 8;
-				""");
-
 				int draggedIndex = dashboard.getChildren().indexOf(draggedPanel);
 				int targetIndex = dashboard.getChildren().indexOf(node);
 

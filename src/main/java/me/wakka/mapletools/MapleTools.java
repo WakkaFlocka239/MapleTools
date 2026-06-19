@@ -15,9 +15,24 @@ public class MapleTools extends Application {
 
 	@Getter
 	private static final boolean refreshCacheFromWz = false;
+	private static boolean stopping = false;
+
+	private OverlayWindow overlayWindow;
+	private MapViewer mapViewer;
+	private MapleToolsWindow toolsWindow;
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	@Override
+	public void stop() {
+		if (stopping) return;
+		stopping = true;
+
+		MapleSession.get().logger().info("MapleTools shutting down...");
+		overlayWindow.stop();
+		mapViewer.stop();
 	}
 
 	@Override
@@ -25,18 +40,18 @@ public class MapleTools extends Application {
 		MapleData.init();
 		MapleSession session = MapleSession.get();
 
-		OverlayWindow overlayWindow = new OverlayWindow(session);
+		overlayWindow = new OverlayWindow(session);
 		// TODO: MAYBE A BUTTON OR REPEATING TASK TO CHECK IT CAN START NOW?
 		if (MapleTools.isMapleClientRunning())
 			overlayWindow.start();
 
-		MapViewer mapViewer = new MapViewer(session);
+		mapViewer = new MapViewer(session);
 		mapViewer.start();
 
 		stage.hide();
 
-		MapleToolsWindow window = new MapleToolsWindow(session);
-		window.start(stage);
+		toolsWindow = new MapleToolsWindow(session);
+		toolsWindow.start(stage);
 	}
 
 	private static final List<String> MAPLE_PROCESSES = List.of(

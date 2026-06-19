@@ -1,8 +1,10 @@
 package me.wakka.mapletools.feature.overlay.readers;
 
+import javafx.application.Platform;
 import me.wakka.mapletools.data.MapleData;
 import me.wakka.mapletools.data.MapleSession;
 import me.wakka.mapletools.feature.overlay.CaptureRegion;
+import me.wakka.mapletools.feature.ui.panels.LocationPanel;
 import me.wakka.mapletools.models.MapleMap;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
@@ -30,16 +32,17 @@ public class LocationTextReader implements TextReader {
 		tesseract.setPageSegMode(pageSegMode);
 	}
 
+	@Override
 	public void read(MapleSession session, CaptureRegion region, BufferedImage image) {
 		try {
 			BufferedImage processed = TextReader.scale(image, scaleFactor);
 			String rawLoc = tesseract.doOCR(processed).trim();
-			MapleSession.get().setRawLocation(rawLoc);
+			session.setRawLocation(rawLoc);
 
 			MapleMap matched = matchLocation(session, rawLoc, MapleData.getMapsByStreet());
 
 			if (matched != null) {
-				MapleSession.get().setCurrentMap(matched);
+				session.setCurrentMap(matched);
 				session.logger().info("Matched map: " + matched.getMapName());
 			} else {
 				session.logger().warn("Couldn't find matched map: " + rawLoc);

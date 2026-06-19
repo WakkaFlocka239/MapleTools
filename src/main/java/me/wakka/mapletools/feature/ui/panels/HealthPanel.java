@@ -17,11 +17,15 @@ public class HealthPanel extends MapleToolPanel {
 
 		setPrefSize(250, 100);
 
-		label.setStyle("-fx-text-fill: white;");
-		getChildren().add(label);
+		content.getChildren().add(label);
+
+		session.getCurrentHp().addListener((obs, old, current) -> update());
+		session.getCurrentMaxHp().addListener((obs, old, current) -> update());
+
+		update();
 	}
 
-	public void update(int current, int max) {
-		label.setText("HP: " + current + " / " + max);
+	public void update() {
+		label.setText("HP: " + session.getCurrentHp().get() + " / " + session.getCurrentMaxHp().get());
 	}
 }

@@ -17,11 +17,14 @@ public class ExperiencePanel extends MapleToolPanel {
 
 		setPrefSize(250, 100);
 
-		label.setStyle("-fx-text-fill: white;");
-		getChildren().add(label);
+		content.getChildren().add(label);
+
+		session.getCurrentExpPercent().addListener((obs, old, current) -> update());
+
+		update();
 	}
 
-	public void update(double current) {
-		label.setText("EXP: " + current);
+	public void update() {
+		label.setText("EXP: " + session.getCurrentExpPercent().get());
 	}
 }
